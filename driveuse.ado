@@ -3,7 +3,7 @@ program define driveuse, rclass
     syntax [anything(everything)] [if] [in] [, CLEAR nolabel]
 
     * 1. Detect OS and set base paths
-    if "`c(os)'" == "MacOSX" {
+    if inlist("`c(os)'", "MacOSX", "Unix") {     // Apple-Silicon batch Stata reports "Unix"
         local home "/Users/`c(username)'"
         local gd_base "`home'/Library/CloudStorage"
         local folders : dir "`gd_base'" dirs "GoogleDrive-*"
