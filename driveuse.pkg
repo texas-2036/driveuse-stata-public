@@ -5,7 +5,7 @@ d driveuse is a wrapper for 'use' that automatically detects the local
 d path to Google Drive on both macOS and Windows. It creates global 
 d shortcuts $driveuse and $sf for easy path construction.
 d
-d Author: Eric A. Booth
+d Author: Eric A. Booth, Sr Researcher, Texas2036.org
 d Support: eric.a.booth@gmail.com
 d
 f driveuse.ado
