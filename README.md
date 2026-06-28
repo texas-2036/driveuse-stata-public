@@ -68,7 +68,7 @@ do "${myproj}/scripts/clean_data.do"
 ## Installation
 
 ```stata
-net install driveuse, from("https://raw.githubusercontent.com/ericbooth/driveuse-stata/master/") replace
+net install driveuse, from("https://raw.githubusercontent.com/ericabooth/driveuse-stata/master/") replace
 which driveuse
 help driveuse
 ```
