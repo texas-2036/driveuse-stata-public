@@ -15,10 +15,13 @@ M13,both,mac,,,home/Library/CloudStorage/Data and Research Team/4_Active Project
 M14,both,mac,,custom/Shared drives/,custom/Shared drives/Data and Research Team,custom/Shared drives/Data and Research Team,TX2036_DRIVE_ROOT with a trailing slash
 M15,both,mac,,,home/Library/CloudStorage/GoogleDrive-amy@texas2036.org/Shared drives/Data and Research Team;home/Library/CloudStorage/GoogleDrive-Zed@texas2036.org/Shared drives/Data and Research Team,home/Library/CloudStorage/GoogleDrive-Zed@texas2036.org/Shared drives/Data and Research Team,Sorting is by byte value: uppercase sorts before lowercase
 W01,both,windows,,,win/G/Shared drives/Data and Research Team,win/G/Shared drives/Data and Research Team,G: drive
-W02,both,windows,,,win/H/Shared drives/Data and Research Team,ERROR,Another drive letter needs TX2036_DRIVE_ROOT (no scan of other letters)
+W02,both,windows,,,win/H/Shared drives/Data and Research Team,win/H/Shared drives/Data and Research Team,Another drive letter is found without TX2036_DRIVE_ROOT
 W03,both,windows,,,win/G/Shared drives,ERROR,G: without the shared drive
 W04,both,windows,,ovr/Shared drives,ovr/Shared drives/Data and Research Team;win/G/Shared drives/Data and Research Team,ovr/Shared drives/Data and Research Team,TX2036_DRIVE_ROOT comes first
 W05,both,windows,Other Drive,,win/G/Shared drives/Other Drive,win/G/Shared drives/Other Drive,Another shared drive by name
 W06,both,windows,,ovr\Shared drives,ovr/Shared drives/Data and Research Team,ovr/Shared drives/Data and Research Team,TX2036_DRIVE_ROOT written with backslashes
+W07,both,windows,,,win/D/Shared drives/Data and Research Team;win/G/Shared drives/Data and Research Team,win/G/Shared drives/Data and Research Team,G: is used when another letter also has the drive
+W08,both,windows,,,win/C/Shared drives/Data and Research Team,ERROR,C: is not searched
+W09,both,windows,Other Drive,,win/H/Shared drives/Data and Research Team,ERROR,Another letter with a different shared drive only
 L01,both,other,,,home,ERROR,Other systems: only TX2036_DRIVE_ROOT
 L02,both,other,,mnt/Shared drives,mnt/Shared drives/Data and Research Team,mnt/Shared drives/Data and Research Team,TX2036_DRIVE_ROOT on Linux

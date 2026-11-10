@@ -82,8 +82,14 @@ check(grepl("TX2036_DRIVE_ROOT", msg), "quiet = FALSE names the source")
 Sys.unsetenv("TX2036_DRIVE_ROOT")
 
 # 4. This computer -------------------------------------------------------------
-live <- tryCatch(driveuse(), error = function(e) paste("ERROR:", conditionMessage(e)))
-check(dir.exists(live) && endsWith(live, "Shared drives/Data and Research Team"), "this computer")
+# A computer with no team drive (no @texas2036.org Google Drive account)
+# cannot run this step. It is skipped and reported; every other check runs.
+live <- tryCatch(driveuse(), error = function(e) "NONE")
+if (live == "NONE") {
+  cat("this computer: skipped, driveuse found no team drive here\n")
+} else {
+  check(dir.exists(live) && endsWith(live, "Shared drives/Data and Research Team"), "this computer")
+}
 
 # 5. Side by side with the Stata command ----------------------------------------
 sfile <- file.path(dirname(tempdir()), "driveuse_results_stata.csv")

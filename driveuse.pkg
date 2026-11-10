@@ -9,6 +9,11 @@ d
 d Author: Eric A. Booth, Sr Researcher, Texas2036.org
 d Support: eric.a.booth@gmail.com
 d
+d New in v2.0.2: driveuse.R searches the same Windows drive letters as the
+d Stata command (G: first, then D: through Z:); 2.0.1 changed only Stata.
+d The tests cover the letter search and skip the check of this computer,
+d with a note, when it has no team drive.
+d
 d New in v2.0.1: on Windows, driveuse probes every drive letter (G: first)
 d instead of assuming Google Drive for desktop is on G:, so a non-default
 d mount still works.

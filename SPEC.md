@@ -18,8 +18,10 @@ lists fake folder layouts and the path each version should return.
    value, keeps those whose names end in `@texas2036.org` (in any case), and
    uses the first one that contains `Shared drives/<drive>`. It never uses a
    folder that belongs to another account.
-3. **Windows.** driveuse uses `G:/Shared drives/<drive>`, the letter Google
-   Drive for desktop uses by default. It checks no other letters.
+3. **Windows.** driveuse looks for `<letter>:/Shared drives/<drive>` on drive
+   `G:`, the letter Google Drive for desktop uses by default, and then on
+   `D:` through `Z:` in order. It uses the first letter that has the drive.
+   It does not look on `A:`, `B:`, or `C:`.
 4. **Other systems, such as Linux.** driveuse uses only the override.
 5. **Existence first.** driveuse confirms that the folder exists before it
    sets a global or returns a path. When it finds nothing, it stops and says
@@ -32,8 +34,8 @@ lists fake folder layouts and the path each version should return.
    works in another drive. The Stata equivalents are
    `driveuse "ProjectA/x.dta"` and `driveuse "x.dta", drive("Other Drive")`.
 
-When Google Drive is somewhere these rules do not look, such as another
-Windows drive letter, `_codeshare/1_Install_TX2036.do` records the folder as
+When Google Drive is somewhere these rules do not look, such as a folder
+that is not a drive letter, `_codeshare/1_Install_TX2036.do` records the folder as
 `TX2036_DRIVE_ROOT` in the person's `sysprofile.do`, so the override rule
 covers it. `help driveuse` describes the installer.
 
@@ -53,15 +55,20 @@ driveuse should return, or `ERROR`.
 
 On 2026-10-14 (Stata 19.5 and R 4.6.0 on a Mac), both versions returned the
 expected path for all 23 layouts and found the same folder on that computer.
+On 2026-11-10 (version 2.0.2, StataNow 19.5 and R on a Mac with no team
+drive), both returned the expected path for all 26 layouts; the check of
+that computer was skipped. A computer with no `@texas2036.org` Google Drive
+account skips that one check and says so.
 
 ## Choices made to keep it simple
 
-- **No search of other Windows drive letters or of the registry.** Google
+- **Drive letters are tried in turn; the registry is not read.** Google
   documents a `DefaultMountPoint` registry value, but not whether the app
   writes it when a user picks another letter
   ([Advanced Drive for desktop configuration](https://knowledge.workspace.google.com/admin/drive/advanced-drive-for-desktop-configuration),
-  retrieved 2026-10-14), and reading it from Stata needs a shell call. The
-  installer records the folder instead.
+  retrieved 2026-10-14), and reading it from Stata needs a shell call.
+  Checking whether a folder exists on each letter needs neither. Versions
+  before 2.0.1 looked only on `G:`.
 - **No `/Volumes/GoogleDrive` check.** Google Drive for desktop moved to
   `Library/CloudStorage` in 2022.
 - **No `~` expansion.** Paths use `HOME` or full paths, because `~` does not
@@ -70,5 +77,7 @@ expected path for all 23 layouts and found the same folder on that computer.
 ## To confirm on a Windows computer
 
 - Google Drive for desktop on `G:`: driveuse finds the drive.
-- Google Drive on another letter: after the installer runs with that letter,
-  driveuse finds the drive through `TX2036_DRIVE_ROOT`.
+- Google Drive on another letter, with `TX2036_DRIVE_ROOT` not set: driveuse
+  finds the drive, in Stata and in R, and reports that letter.
+- An empty card reader or optical drive on a letter before Google Drive's:
+  driveuse passes over it with no error window.

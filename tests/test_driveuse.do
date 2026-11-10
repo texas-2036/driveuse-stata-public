@@ -172,14 +172,23 @@ assert _rc == 601
 macro drop TX2036_DRIVE_ROOT
 
 * 3. This computer ------------------------------------------------------------
+* A computer with no team drive (no @texas2036.org Google Drive account)
+* cannot run this step. It is skipped and reported; every other check runs.
 macro drop sf driveuse
-driveuse
-local live `"`r(path)'"'
-local livehow `"`r(method)' `r(account)'"'
-assert `"$sf"' == `"`live'"' & `"$driveuse"' == `"`live'"'
-mata: st_local("ok", strofreal(direxists(st_local("live"))))
-assert `ok'
-assert substr(`"`live'"', -36, .) == "Shared drives/Data and Research Team"
+cap noi driveuse
+if _rc == 601 {
+    local live "NONE"
+    local livehow "skipped: driveuse found no team drive on this computer"
+}
+else {
+    assert _rc == 0
+    local live `"`r(path)'"'
+    local livehow `"`r(method)' `r(account)'"'
+    assert `"$sf"' == `"`live'"' & `"$driveuse"' == `"`live'"'
+    mata: st_local("ok", strofreal(direxists(st_local("live"))))
+    assert `ok'
+    assert substr(`"`live'"', -36, .) == "Shared drives/Data and Research Team"
+}
 
 * 4. Report, and save the answers for tests/test_driveuse_R.R ---------------
 use `"`results'"', clear
@@ -197,4 +206,5 @@ di _n as text "layouts: " as result _N - `nfail' as text " of " as result _N as 
 di as text "this computer: " as result `"`live'"' as text " (`livehow')"
 assert `nfail' == 0
 _t_rmtree `"`base'"'
-di as result "all driveuse tests passed"
+if "`live'" == "NONE" di as result "all driveuse tests passed (this computer skipped: no team drive)"
+else di as result "all driveuse tests passed"

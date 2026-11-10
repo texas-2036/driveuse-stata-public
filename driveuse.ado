@@ -1,4 +1,4 @@
-*! version 2.0.1  10nov2026  Eric A. Booth, Texas 2036
+*! version 2.0.2  10nov2026  Eric A. Booth, Texas 2036
 *! driveuse: find the team's Google Drive shared drive on any Mac or Windows
 *! computer, set $sf and $driveuse, and load a dataset from it.
 *! _driveuse_root.ado does the search; SPEC.md has the rules.

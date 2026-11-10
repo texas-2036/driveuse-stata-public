@@ -1,11 +1,11 @@
-*! version 2.0.0  14oct2026  Eric A. Booth, Texas 2036
+*! version 2.0.2  10nov2026  Eric A. Booth, Texas 2036
 *! _driveuse_root: find a Google Drive shared drive for -driveuse-.
 *!
 *! Looks in this order (SPEC.md has the rules; tests/ checks them):
 *!   1. TX2036_DRIVE_ROOT, the folder that contains the shared drives
 *!      (Stata global first, then the environment variable)
 *!   2. macOS: <home>/Library/CloudStorage/GoogleDrive-*@texas2036.org
-*!   3. Windows: G:
+*!   3. Windows: drive G:, then D: through Z:
 *! Returns r(path) r(drive) r(method) r(account), or stops with error 601.
 *!
 *! driveuse passes only drive(). The other options stand in for parts of the
@@ -117,25 +117,20 @@ program define _driveuse_root, rclass
     *    G: but a user can pick any letter.  Probe G: first, then every other
     *    letter, so a non-default mount still works.
     else if "`os'" == "windows" {
+        * winroot() stands in for the set of drives in the tests: the fake
+        * drive G: is the folder <winroot>/G
         local ok 0
-        if `"`winroot'"' != "" {
-            _du_norm p `"`winroot'/G/`tail'"'
+        foreach L in G D E F H I J K L M N O P Q R S T U V W X Y Z {
+            if `"`winroot'"' != "" _du_norm p `"`winroot'/`L'/`tail'"'
+            else                   _du_norm p `"`L':/`tail'"'
             _du_isdir ok `"`p'"'
-        }
-        else {
-            foreach L in G D E F H I J K L M N O P Q R S T U V W X Y Z {
-                _du_norm p `"`L':/`tail'"'
-                _du_isdir ok `"`p'"'
-                if `ok' continue, break
-            }
+            if `ok' continue, break
         }
         if !`ok' {
-            di as error `"driveuse: shared drive "`drive'" not found on any mounted drive letter."'
+            di as error `"driveuse: shared drive "`drive'" not found on drive G: or on D: through Z:."'
             di as error "  Is Google Drive for desktop running and signed in with your"
-            di as error "  `suffix' account? If it uses a non-default drive letter and"
-            di as error "  this message still shows, set TX2036_DRIVE_ROOT or run"
-            di as error "  _codeshare/1_Install_TX2036.do."
-            _du_fail `"`"`p'"'"'
+            di as error "  `suffix' account?"
+            _du_fail ""
         }
         local path `"`p'"'
         local method "mounted drive letter"

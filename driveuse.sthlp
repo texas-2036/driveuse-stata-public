@@ -1,5 +1,5 @@
 {smcl}
-{* *! version 2.0.1 10nov2026 Author: Eric A. Booth}{...}
+{* *! version 2.0.2 10nov2026 Author: Eric A. Booth}{...}
 {vieweralsosee "use" "help use"}{...}
 {viewerjumpto "Syntax" "driveuse##syntax"}{...}
 {viewerjumpto "Description" "driveuse##description"}{...}
@@ -76,7 +76,8 @@ It uses only account folders whose names end in {cmd:@texas2036.org}, so a
 personal Google account on the same Mac is never used.{p_end}
 {p 8 12 2}
 3. On Windows, {cmd:G:/Shared drives}, the drive letter Google Drive for desktop
-uses unless someone changes it.{p_end}
+uses unless someone changes it, and then drives {cmd:D:} through {cmd:Z:} in
+order. {cmd:driveuse} uses the first letter that has the shared drive.{p_end}
 
 {pstd}
 Before it sets anything, {cmd:driveuse} confirms that the shared drive's folder
@@ -161,7 +162,7 @@ start, before your own {cmd:profile.do}. The file runs
 {cmd:_codeshare/tx2036_startup.do}, which adds the {cmd:_codeshare} commands and
 sets {cmd:$sf}, {cmd:$driveuse}, {cmd:$codeshare}, and {cmd:$datashare}. When
 Google Drive is somewhere {cmd:driveuse} does not look by itself, such as
-another drive letter, the installer also records that folder in
+a folder that is not a drive letter, the installer also records that folder in
 {cmd:sysprofile.do} as {cmd:TX2036_DRIVE_ROOT}, so {cmd:driveuse} finds it in
 every session. Last, the installer installs the SSC commands that team code
 uses.

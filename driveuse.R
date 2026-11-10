@@ -1,6 +1,6 @@
 # =============================================================================
 # driveuse.R -- R version of the Stata command driveuse (Texas 2036)
-# Version 2.0 (2026-10-14)
+# Version 2.0.2 (2026-11-10)
 #
 # Finds a Google Drive shared drive on this computer and returns a path in
 # it, so the same script runs on every team member's Mac and Windows
@@ -25,7 +25,8 @@
 #   2. macOS: the GoogleDrive-*@texas2036.org folders in
 #      <home>/Library/CloudStorage. Folders of other Google accounts are
 #      never used.
-#   3. Windows: G:, where Google Drive for desktop puts the drive by default.
+#   3. Windows: drive G:, where Google Drive for desktop puts the drive by
+#      default, then D: through Z:.
 #   4. Other systems: only TX2036_DRIVE_ROOT.
 #
 # The canonical copy is in _codeshare/driveuse-stata-public; codemenu,
@@ -117,15 +118,19 @@ driveuse_root <- function(drive = "Data and Research Team", os = NULL, home = NU
     .du_fail(msg, tried)
   }
 
-  # 3. Windows: G:, where Google Drive for desktop puts the drive by default
+  # 3. Windows: Google Drive for desktop mounts as a drive, G: by default,
+  #    but a user can pick another letter. Try G: first, then D: through Z:.
+  #    winroot stands in for the set of drives in the tests: the fake drive
+  #    G: is the folder <winroot>/G.
   if (os == "windows") {
-    g <- if (is.null(winroot)) "G:" else file.path(winroot, "G")
-    p <- .du_norm(file.path(g, tail))
-    if (dir.exists(p)) return(found(p, "G: drive"))
-    .du_fail(paste0("shared drive \"", drive, "\" not found on G:.",
+    for (L in c("G", setdiff(LETTERS[4:26], "G"))) {
+      d <- if (is.null(winroot)) paste0(L, ":") else file.path(winroot, L)
+      p <- .du_norm(file.path(d, tail))
+      if (dir.exists(p)) return(found(p, "mounted drive letter"))
+    }
+    .du_fail(paste0("shared drive \"", drive, "\" not found on drive G: or on D: through Z:.",
                     "\n  Is Google Drive for desktop running and signed in with your",
-                    "\n  ", suffix, " account? If it uses another drive letter, set",
-                    "\n  TX2036_DRIVE_ROOT (see the top of driveuse.R)."), p)
+                    "\n  ", suffix, " account?"), character(0))
   }
 
   # 4. Anything else (Linux): only the override
