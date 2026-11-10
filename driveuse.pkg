@@ -9,6 +9,12 @@ d
 d Author: Eric A. Booth, Sr Researcher, Texas2036.org
 d Support: eric.a.booth@gmail.com
 d
+d New in v2.0.1: on Windows, driveuse probes every drive letter (G: first)
+d instead of assuming Google Drive for desktop is on G:, so a non-default
+d mount still works.
+d
+d Distribution-Date: 20261110
+d
 f driveuse.ado
 f _driveuse_root.ado
 f driveuse.sthlp

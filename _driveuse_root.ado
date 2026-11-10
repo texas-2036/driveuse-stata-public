@@ -113,21 +113,32 @@ program define _driveuse_root, rclass
         }
     }
 
-    * 3. Windows: G:, where Google Drive for desktop puts the drive by default
+    * 3. Windows: Google Drive for desktop mounts as a virtual drive, default
+    *    G: but a user can pick any letter.  Probe G: first, then every other
+    *    letter, so a non-default mount still works.
     else if "`os'" == "windows" {
-        if `"`winroot'"' == "" local g "G:"
-        else local g `"`winroot'/G"'
-        _du_norm p `"`g'/`tail'"'
-        _du_isdir ok `"`p'"'
+        local ok 0
+        if `"`winroot'"' != "" {
+            _du_norm p `"`winroot'/G/`tail'"'
+            _du_isdir ok `"`p'"'
+        }
+        else {
+            foreach L in G D E F H I J K L M N O P Q R S T U V W X Y Z {
+                _du_norm p `"`L':/`tail'"'
+                _du_isdir ok `"`p'"'
+                if `ok' continue, break
+            }
+        }
         if !`ok' {
-            di as error `"driveuse: shared drive "`drive'" not found on G:."'
+            di as error `"driveuse: shared drive "`drive'" not found on any mounted drive letter."'
             di as error "  Is Google Drive for desktop running and signed in with your"
-            di as error "  `suffix' account? If it uses another drive letter, set"
-            di as error "  TX2036_DRIVE_ROOT or run _codeshare/1_Install_TX2036.do."
+            di as error "  `suffix' account? If it uses a non-default drive letter and"
+            di as error "  this message still shows, set TX2036_DRIVE_ROOT or run"
+            di as error "  _codeshare/1_Install_TX2036.do."
             _du_fail `"`"`p'"'"'
         }
         local path `"`p'"'
-        local method "G: drive"
+        local method "mounted drive letter"
     }
 
     * 4. Anything else (Linux): only the override
