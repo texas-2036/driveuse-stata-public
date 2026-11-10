@@ -1,66 +1,119 @@
+*! version 2.0.0  14oct2026  Eric A. Booth, Texas 2036
+*! driveuse: find the team's Google Drive shared drive on any Mac or Windows
+*! computer, set $sf and $driveuse, and load a dataset from it.
+*! _driveuse_root.ado does the search; SPEC.md has the rules.
 program define driveuse, rclass
     version 14
-    syntax [anything(everything)] [if] [in] [, CLEAR nolabel]
+    syntax [anything(everything)] [, CLEAR nolabel Drive(string)]
 
-    * 1. Detect OS and set base paths
-    if inlist("`c(os)'", "MacOSX", "Unix") {     // Apple-Silicon batch Stata reports "Unix"
-        local home "/Users/`c(username)'"
-        local gd_base "`home'/Library/CloudStorage"
-        local folders : dir "`gd_base'" dirs "GoogleDrive-*"
-        local folder  : word 1 of `folders'
-        local folder  = subinstr(`"`folder'"', `"""', "", .)
-        local sf_path "`gd_base'/`folder'/Shared drives/Data and Research Team"
-    }
-    else if "`c(os)'" == "Windows" {
-        * Google Drive for Desktop mounts as a virtual drive, default G:
-        local sf_path "G:/Shared drives/Data and Research Team"
-    }
-    else {
-        di as error "driveuse: unsupported operating system (`c(os)')"
-        exit 198
-    }
-
-    * 2. Set global shortcuts
-    global driveuse `"`sf_path'"'
-    global sf `"`sf_path'"'
-
-    * 3. Handle 'driveuse' called without arguments (just to set globals)
-    if `"`anything'"' == "" {
-        di as text "driveuse: globals {bf:\$driveuse} and {bf:\$sf} set to:"
-        di as result `"`sf_path'"'
-        exit
-    }
-
-    * 4. Parse 'anything' for 'using' syntax or simple filename
-    local vlist ""
+    * 1. Parse [varlist] [using] filename [if] [in]. User text goes through
+    *    macval() and never into a one-line if/else, which Stata expands a
+    *    second time, so a $ or ` in a filename or condition reaches -use-
+    *    as typed
+    local pre ""
     local fname ""
-    
-    if strpos(`"`anything'"', " using ") {
-        local vlist = substr(`"`anything'"', 1, strpos(`"`anything'"', " using ") - 1)
-        local fname = substr(`"`anything'"', strpos(`"`anything'"', " using ") + 7, .)
+    local qual ""
+    local usingseen 0
+    local wantfile 0
+    local inqual 0
+    local rest `"`macval(anything)'"'
+    while `"`macval(rest)'"' != "" {
+        gettoken tok rest : rest, quotes
+        if `"`macval(tok)'"' == "using" & !`usingseen' {
+            local usingseen 1
+            local wantfile 1
+        }
+        else if `wantfile' {
+            local fname `macval(tok)'
+            local wantfile 0
+        }
+        else {
+            if inlist(`"`macval(tok)'"', "if", "in") local inqual 1
+            if `inqual' {
+                local qual `"`macval(qual)' `macval(tok)'"'
+            }
+            else if `usingseen' {
+                di as error `"driveuse: unexpected `macval(tok)' after the filename"'
+                exit 198
+            }
+            else {
+                local pre `"`macval(pre)' `macval(tok)'"'
+            }
+        }
     }
-    else {
-        local fname `"`anything'"'
+    local vlist ""
+    if `usingseen' {
+        local vlist `"`macval(pre)'"'
+        if `"`macval(fname)'"' == "" {
+            di as error "driveuse: filename required after using"
+            exit 198
+        }
+    }
+    else if `"`macval(anything)'"' != "" {
+        local n : word count `macval(pre)'
+        if `n' != 1 {
+            di as error "driveuse: specify one filename. Put a filename that contains spaces"
+            di as error "  in double quotes, or type driveuse varlist using filename."
+            exit 198
+        }
+        local fname `macval(pre)'
     }
 
-    * Clean filename (remove quotes if user provided them)
-    local fname = subinstr(`"`fname'"', `"""', "", .)
-    
-    * Prepend base path if not already absolute (simple check)
-    if !regexm(`"`fname'"', "^(/|[A-Z]:)") {
-        local fullpath `"`sf_path'/`fname'"'
-    }
-    else {
-        local fullpath `"`fname'"'
+    * 2. Find the shared drive; this stops before anything is set if it fails
+    if `"`drive'"' == "" local drive "Data and Research Team"
+    _driveuse_root, drive(`"`drive'"')
+    local root    `"`r(path)'"'
+    local method  `"`r(method)'"'
+    local account `"`r(account)'"'
+    local team = lower(`"`drive'"') == "data and research team"
+
+    * 3. $sf and $driveuse always mean the Data and Research Team drive
+    if `team' {
+        global driveuse `"`root'"'
+        global sf `"`root'"'
     }
 
-    * 5. Execute 'use'
-    if "`vlist'" != "" {
-        use `vlist' using `"`fullpath'"' `if' `in', `clear' `nolabel'
+    * 4. No filename: say where the drive is (block ifs keep \$ from expanding)
+    if `"`macval(fname)'"' == "" {
+        local how `"`method'"'
+        if `"`account'"' != "" {
+            local how `"Google Drive account `account'"'
+        }
+        if `team' {
+            di as text "driveuse: {bf:\$sf} and {bf:\$driveuse} set to"
+        }
+        else {
+            di as text `"driveuse: `drive' is at"'
+        }
+        di as result `"  `root'"'
+        di as text `"  source: `how'"'
+        if !`team' {
+            di as text "  stored in r(path); \$sf and \$driveuse are unchanged"
+        }
     }
+
+    * 5. Load the file, relative to the drive unless the path is absolute
     else {
-        use `"`fullpath'"' `if' `in', `clear' `nolabel'
+        local f `"`macval(fname)'"'
+        local c1 = substr(`"`macval(f)'"', 1, 1)
+        if inlist(`"`c1'"', "/", "\") | substr(`"`macval(f)'"', 2, 1) == ":" {
+            local full `"`macval(f)'"'
+        }
+        else {
+            local full `"`root'/`macval(f)'"'
+        }
+        if `"`macval(vlist)'"' != "" {
+            use `macval(vlist)' using `"`macval(full)'"' `macval(qual)', `clear' `label'
+        }
+        else {
+            use `"`macval(full)'"' `macval(qual)', `clear' `label'
+        }
+        describe, short
+        return local file `"`macval(full)'"'
     }
-    
-    describe, short
+
+    return local path    `"`root'"'
+    return local drive   `"`drive'"'
+    return local method  `"`method'"'
+    return local account `"`account'"'
 end

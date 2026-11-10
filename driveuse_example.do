@@ -1,41 +1,17 @@
+* driveuse_example.do: common uses of driveuse. Paths are inside the
+* Data and Research Team shared drive unless drive() names another.
 
-**Google drive use
-if "`c(os)'" == "MacOSX" {
-    local home "/Users/`c(username)'"
-    local gd_base "`home'/Library/CloudStorage"
+* find the drive and set $sf and $driveuse
+driveuse
 
-    local gd_folders : dir "`gd_base'" dirs "GoogleDrive-*"
-    local gd_folder  : word 1 of `gd_folders'
-    local gd_folder  = subinstr(`"`gd_folder'"', `"""', "", .)
-
-    local sf "`gd_base'/`gd_folder'/Shared drives/Data and Research Team"
-}
-else if "`c(os)'" == "Windows" {
-    * Google Drive for Desktop mounts as a virtual drive, default is G:
-    * Adjust the drive letter below if yours differs
-    local sf "G:/Shared drives/Data and Research Team"
-}
-global driveuse `"`sf'"'
-global sf `sf'
-
-s
-
-**
-use `"${sf}/test.dta"', clear
-use `"${driveuse}/_datarepository/test.dta"', clear
-**
-
-
-
-* Basic load
-driveuse "test.dta", clear
-driveuse "test.dta" if rep78 == 2, clear
-
-* With subdirectory
+* load a dataset, all of it or part of it
 driveuse "project/data/survey.dta", clear
+driveuse "project/data/survey.dta" if year == 2024, clear
+driveuse id age income using "project/data/survey.dta", clear
+driveuse using "project/data/survey.dta" in 1/100, clear
 
-* Load specific variables only
-driveuse id age income using "survey.dta", clear
+* save output next to it with the global
+save "$sf/project/output/survey_clean.dta", replace
 
-* With if condition
-driveuse "survey.dta" if year == 2024, clear
+* work in another shared drive
+driveuse "project/file.dta", drive("Other Drive") clear

@@ -1,0 +1,24 @@
+case,scope,os,drive,override,dirs,expect,note
+M01,both,mac,,,home/Library/CloudStorage/GoogleDrive-pat@texas2036.org/Shared drives/Data and Research Team,home/Library/CloudStorage/GoogleDrive-pat@texas2036.org/Shared drives/Data and Research Team,One @texas2036.org account folder
+M02,both,mac,,,home/Library/CloudStorage/GoogleDrive-pat@gmail.com/Shared drives/Data and Research Team;home/Library/CloudStorage/GoogleDrive-pat@texas2036.org/Shared drives/Data and Research Team,home/Library/CloudStorage/GoogleDrive-pat@texas2036.org/Shared drives/Data and Research Team,A personal account folder that sorts first is skipped
+M03,both,mac,,,home/Library/CloudStorage/GoogleDrive-pat@gmail.com/Shared drives/Data and Research Team,ERROR,No @texas2036.org account folder: stop and list the folders found
+M04,both,mac,,,home/Library/CloudStorage,ERROR,No account folders (Google Drive not signed in)
+M05,both,mac,,,home,ERROR,No CloudStorage folder (Google Drive not installed)
+M06,both,mac,,,home/Library/CloudStorage/GoogleDrive-pat@texas2036.org/Shared drives,ERROR,Account folder without the shared drive
+M07,both,mac,Other Drive,,home/Library/CloudStorage/GoogleDrive-pat@texas2036.org/Shared drives/Data and Research Team;home/Library/CloudStorage/GoogleDrive-pat@texas2036.org/Shared drives/Other Drive,home/Library/CloudStorage/GoogleDrive-pat@texas2036.org/Shared drives/Other Drive,Another shared drive by name
+M08,both,mac,,,home/Library/CloudStorage/GoogleDrive-zoe@texas2036.org/Shared drives/Data and Research Team;home/Library/CloudStorage/GoogleDrive-ann@texas2036.org/Shared drives/Data and Research Team,home/Library/CloudStorage/GoogleDrive-ann@texas2036.org/Shared drives/Data and Research Team,Two @texas2036.org folders: the first in sorted order
+M09,both,mac,,,home/Library/CloudStorage/GoogleDrive-Pat@Texas2036.org/Shared drives/Data and Research Team,home/Library/CloudStorage/GoogleDrive-Pat@Texas2036.org/Shared drives/Data and Research Team,The account suffix match ignores case
+M10,both,mac,,,home/Library/CloudStorage/GoogleDrive-pat@gmail.com/Shared drives/Data and Research Team;home/Library/CloudStorage/GoogleDrive-pat@texas2036.org/Shared drives,ERROR,The @texas2036.org folder lacks the drive: the personal folder is not used
+M11,both,mac,,custom/Shared drives,custom/Shared drives/Data and Research Team;home/Library/CloudStorage/GoogleDrive-pat@texas2036.org/Shared drives/Data and Research Team,custom/Shared drives/Data and Research Team,TX2036_DRIVE_ROOT comes first
+M12,both,mac,,custom/Shared drives,custom/Shared drives;home/Library/CloudStorage/GoogleDrive-pat@texas2036.org/Shared drives/Data and Research Team,ERROR,TX2036_DRIVE_ROOT without the drive: stop with no fallback
+M13,both,mac,,,home/Library/CloudStorage/Data and Research Team/4_Active Projects;home/Library/CloudStorage/GoogleDrive-pat@texas2036.org/Shared drives/Data and Research Team,home/Library/CloudStorage/GoogleDrive-pat@texas2036.org/Shared drives/Data and Research Team,A stray non-Google folder in CloudStorage is ignored
+M14,both,mac,,custom/Shared drives/,custom/Shared drives/Data and Research Team,custom/Shared drives/Data and Research Team,TX2036_DRIVE_ROOT with a trailing slash
+M15,both,mac,,,home/Library/CloudStorage/GoogleDrive-amy@texas2036.org/Shared drives/Data and Research Team;home/Library/CloudStorage/GoogleDrive-Zed@texas2036.org/Shared drives/Data and Research Team,home/Library/CloudStorage/GoogleDrive-Zed@texas2036.org/Shared drives/Data and Research Team,Sorting is by byte value: uppercase sorts before lowercase
+W01,both,windows,,,win/G/Shared drives/Data and Research Team,win/G/Shared drives/Data and Research Team,G: drive
+W02,both,windows,,,win/H/Shared drives/Data and Research Team,ERROR,Another drive letter needs TX2036_DRIVE_ROOT (no scan of other letters)
+W03,both,windows,,,win/G/Shared drives,ERROR,G: without the shared drive
+W04,both,windows,,ovr/Shared drives,ovr/Shared drives/Data and Research Team;win/G/Shared drives/Data and Research Team,ovr/Shared drives/Data and Research Team,TX2036_DRIVE_ROOT comes first
+W05,both,windows,Other Drive,,win/G/Shared drives/Other Drive,win/G/Shared drives/Other Drive,Another shared drive by name
+W06,both,windows,,ovr\Shared drives,ovr/Shared drives/Data and Research Team,ovr/Shared drives/Data and Research Team,TX2036_DRIVE_ROOT written with backslashes
+L01,both,other,,,home,ERROR,Other systems: only TX2036_DRIVE_ROOT
+L02,both,other,,mnt/Shared drives,mnt/Shared drives/Data and Research Team,mnt/Shared drives/Data and Research Team,TX2036_DRIVE_ROOT on Linux

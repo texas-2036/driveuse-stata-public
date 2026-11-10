@@ -1,12 +1,15 @@
 v 3
 d driveuse. Use datasets from Google Drive with cross-platform path handling
 d
-d driveuse is a wrapper for 'use' that automatically detects the local 
-d path to Google Drive on both macOS and Windows. It creates global 
-d shortcuts $driveuse and $sf for easy path construction.
+d driveuse finds the Texas 2036 Data and Research Team shared drive (or
+d another shared drive by name) on macOS and Windows, sets the globals
+d $driveuse and $sf to its path, and loads datasets from it with 'use'.
+d driveuse.R is the R version; it follows the same rules and returns paths.
 d
 d Author: Eric A. Booth, Sr Researcher, Texas2036.org
 d Support: eric.a.booth@gmail.com
 d
 f driveuse.ado
+f _driveuse_root.ado
 f driveuse.sthlp
+f driveuse.R
